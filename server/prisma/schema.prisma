@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model user {
+  userId    String    @id   @default(uuid())
+  username  String    @unique
+  password  String   
+  image     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  connection  connection []
+}
+
+model connection {
+  connectionId Int       @id  @default(autoincrement())
+  name         String
+  description  String?
+  url          String
+  status       Boolean   @default(false)
+  cors         Boolean   @default(true)
+  rateLimit    Boolean   @default(true)
+  totalTimeLimit Int?
+  whenTimeLimit String?
+  active       Boolean   @default(false)
+  userId       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         user   @relation(references: [userId],fields: [userId])
+
+  listCors     listCors[]
+}
+
+model listCors {
+  corsId       Int   @id   @default(autoincrement())
+  connectionId Int
+  urlCors      String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  connection     connection  @relation(references: [connectionId],fields: [connectionId])
+}
+
+
