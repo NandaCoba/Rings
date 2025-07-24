@@ -1,5 +1,5 @@
 
-![Logo](https://purple-top-porpoise-766.mypinata.cloud/ipfs/bafkreifmvpzl7lkngscgu343x4gfliiab2u6gk5xwjcuvg42whbiomo2d4)
+![Logo](https://purple-top-porpoise-766.mypinata.cloud/ipfs/bafkreiezxjfu24onovnevpcmdvlwa6p4qimtg66mglxgobufqqib5myphy)
 
 
 ## RINGS - Easy API Gateway For Human
