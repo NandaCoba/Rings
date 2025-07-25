@@ -11,19 +11,19 @@ export class userController {
 
     static async register(req : Request,res : Response) {
         try {
-            const { username,password } = req.body
+            const { username,password,pin } = req.body
             const finalRequest : userDto= {
-                username, password 
+                username, password,pin
             }
             const data = await userUsecase.register(finalRequest)
 
             return res.status(200).json({
                 data : data
             })
-        } catch (error) {
+        } catch (error : any) {
             console.error(error)
             return res.status(500).json({
-                message : error
+                message : error.message
             })
         }
     }
@@ -40,10 +40,10 @@ export class userController {
             return res.status(200).json({
                 data : data
             })
-        } catch (error) {
+        } catch (error : any) {
             console.error(error)
             return res.status(500).json({
-                message : error
+                message : error.message
             })
         }
     }
@@ -58,15 +58,15 @@ export class userController {
             const finalRequest : userDto= {
                 username, image,userId
             }
-            const data = await userUsecase.login(finalRequest)
+            const data = await userUsecase.updateUser(finalRequest)
 
             return res.status(200).json({
                 data : data
             })
-        } catch (error) {
+        } catch (error : any) {
             console.error(error)
             return res.status(500).json({
-                message : error
+                message : error.message
             })
         }
     }
@@ -75,18 +75,18 @@ export class userController {
 
     static async updatePassword(req : AuthRequest,res : Response) {
         try {
-            const { password } = req.body
+            const { password,oldPassword } = req.body
             const userId = req.userId
-            const finalRequest : userDto= { password,userId }
-            const data = await userUsecase.login(finalRequest)
+            const finalRequest : userDto= { password,userId,oldPassword }
+            const data = await userUsecase.updatePassword(finalRequest)
 
             return res.status(200).json({
                 data : data
             })
-        } catch (error) {
+        } catch (error : any) {
             console.error(error)
             return res.status(500).json({
-                message : error
+                message : error.message
             })
         }
     }

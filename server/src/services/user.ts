@@ -14,11 +14,20 @@ export class userService {
         })
     }
 
+    static findUsername(req : userDto) {
+        return prisma.user.findUnique({
+            where : {
+                username : req.username
+            }
+        })
+    }
+
     static createUser(req : userDto) {
         return prisma.user.create({
             data : {
                 username : req.username!,
-                password : req.password!
+                password : req.password!,
+                pin : req.pin!
             }
         })
     }
@@ -42,6 +51,19 @@ export class userService {
             },
             data : {
                 password : req.password
+            }
+        })
+    }
+
+
+
+    static updatePin(req : userDto) {
+        return prisma.user.update({
+            where : {
+                userId : req.userId
+            },
+            data : {
+                pin : req.pin
             }
         })
     }
