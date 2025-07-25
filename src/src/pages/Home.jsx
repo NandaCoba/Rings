@@ -9,7 +9,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       
-      <div className="p-10 space-y-6 flex-grow">
+      <div className="mt-10 space-y-5 p-9 flex-1">
         <MainPort />
         <Table />
       </div>
