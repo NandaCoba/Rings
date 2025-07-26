@@ -3,6 +3,7 @@ import InputAuth from '../../components/auth/InputAuth'
 import ButtonAuth from '../../components/auth/ButtonAuth'
 import axios from 'axios'
 import { api } from '../../utils/api'
+import toast from 'react-hot-toast'
 
 const LoginLayouts = () => {
   const [username,setUsername] = useState("")
@@ -10,7 +11,14 @@ const LoginLayouts = () => {
 
   const handleLogin = async () => {
     try {
-      await axios.post(`${api}/user/login`,{username,password})
+      const response = await axios.post(`${api}/user/login`,{username,password},{
+        withCredentials : true
+      })
+
+      toast.success("Successfull Login")
+      setTimeout(() => {
+        if(response) window.location.href = "/"
+      }, 1000);
     } catch (error) {
       console.error(error)
     }
@@ -21,8 +29,18 @@ const LoginLayouts = () => {
         <div className="relative z-10 justify-center items-center grid space-y-5 ">
          <h1 className=' text-center text-white font-bold text-3xl'>L<span className=' text-green-500'>o</span>gin</h1>
         <div className=' grid space-y-7 mt-32'>
-          <InputAuth onChange={(e) => setUsername(e.target.value)} name={"username"} />
-          <InputAuth onChange={(e) => setPassword(e.target.value)} name={"password"} />
+<InputAuth
+  onChange={(e) => setUsername(e.target.value)}
+  value={username}
+  name={"username"}
+/>
+<InputAuth
+  type={"password"}
+  onChange={(e) => setPassword(e.target.value)}
+  value={password}
+  name={"password"}
+/>
+
           <ButtonAuth onClick={handleLogin} name={"Login"} />
         </div>
         <h1 onClick={() => window.location.href = "/forgot_password"} className=' text-center text-white font-bold text-sm cursor-pointer'>Forgot Password</h1>

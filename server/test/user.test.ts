@@ -1,3 +1,4 @@
+import { connectionUsecase } from "../src/usecase/connection"
 import { userUsecase } from "../src/usecase/user"
 import { describe, it,expect } from "vitest"
  
@@ -29,4 +30,11 @@ describe("user test",() => {
     //     const update = await userUsecase.forgotPassword({ userId : "cd94b79e-af2f-4370-86dc-9d4bf8f75cf6",password : "nanda123" ,pin : "112233"})
     //     expect(update).toBe("success change password")
     // })
+
+
+
+    it("getAllConnection",async () => {
+        const get = await connectionUsecase.getAllConnection({ userId : "ca5601e8-ccfa-45d3-ad1d-f5adbac16efc"})
+        expect(get).toBe("berhasil get data")
+    })
 })

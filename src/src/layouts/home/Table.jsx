@@ -1,33 +1,74 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
-import AddConnection from './AddConnection' // pastikan path sesuai
-
-const initialData = Array.from({ length: 42 }, (_, i) => ({
-  id: i + 1,
-  name: `Product ${i + 1}`,
-  url: `https://example.com/api/${i + 1}`,
-  limiter: 'None',
-  isActive: Math.random() > 0.5,
-}))
+import Cookies from 'js-cookie'
+import axios from 'axios'
+import AddConnection from './AddConnection'
+import { api } from '../../utils/api'
+import toast from 'react-hot-toast'
 
 const Table = () => {
+  const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [data, setData] = useState(initialData)
+  const [totalPages, setTotalPages] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const itemsPerPage = 10
 
-  const totalPages = Math.ceil(data.length / itemsPerPage)
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get('token')
+      const response = await axios.get(`${api}/connection`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          search: searchTerm,
+          page: currentPage,
+          limit: itemsPerPage,
+        },
+      })
 
-  const toggleStatus = (id) => {
-    const updatedData = data.map((item) =>
-      item.id === id ? { ...item, isActive: !item.isActive } : item
-    )
-    setData(updatedData)
+      setData(response.data.data || [])
+      const total = response.data.total || 0
+      setTotalPages(Math.ceil(total / itemsPerPage))
+    } catch (err) {
+      console.error('Failed to fetch data:', err)
+    }
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [currentPage, searchTerm])
+
+const toggleStatus = async (connectionId) => {
+  try {
+    const token = Cookies.get("token")
+
+    await axios.put(
+      `${api}/connection/update_status/${connectionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.connectionId === connectionId
+          ? { ...item, status: !item.status }
+          : item
+      )
+    )
+
+    toast.success("Status updated!")
+  } catch (error) {
+    console.error(error)
+    toast.error("Failed to update status.")
+  }
+}
+
 
   const changePage = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -48,6 +89,11 @@ const Table = () => {
             type="text"
             className="block p-2 ps-10 text-sm text-white border border-zinc-600 rounded-lg w-80 bg-zinc-800 placeholder-zinc-400 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Search for items"
+            value={searchTerm}
+            onChange={(e) => {
+              setCurrentPage(1)
+              setSearchTerm(e.target.value)
+            }}
           />
           <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
             <svg className="w-4 h-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -73,32 +119,30 @@ const Table = () => {
             <th className="px-6 py-3">Connection Name</th>
             <th className="px-6 py-3">Url</th>
             <th className="px-6 py-3">Limiter</th>
+            <th className="px-6 py-3">Cors</th>
             <th className="px-6 py-3">Status</th>
-            <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((item, index) => (
-            <tr key={item.id} className="border-b border-zinc-700 bg-zinc-900 hover:bg-zinc-700 transition">
+          {data.map((item, index) => (
+            <tr key={item.id} className="border-b border-zinc-700 bg-zinc-900 hover:bg-zinc-700 transition cursor-pointer">
               <td className="px-6 py-4 text-white">
                 {(currentPage - 1) * itemsPerPage + index + 1}
               </td>
               <td className="px-6 py-4 font-medium text-white whitespace-nowrap">{item.name}</td>
               <td className="px-6 py-4">{item.url}</td>
-              <td className="px-6 py-4">{item.limiter}</td>
+              <td className="px-6 py-4">{item.rateLimit ? "True" : "False"}</td>
+              <td className="px-6 py-4">{item.cors ? "True" : "False"}</td>
               <td className="px-6 py-4">
                 <label className="inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={item.isActive}
-                    onChange={() => toggleStatus(item.id)}
+                    checked={item.status}
+                    onChange={() => toggleStatus(item.connectionId)}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-zinc-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-500 rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 relative"></div>
                 </label>
-              </td>
-              <td className="px-6 py-4">
-                <a href="#" className="font-medium text-green-500 hover:underline">Edit</a>
               </td>
             </tr>
           ))}

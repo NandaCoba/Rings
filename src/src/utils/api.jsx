@@ -1,1 +1,1 @@
-export const api = `${window.location.hostname}:4000/api/v1`
+export const api = `${window.location.protocol}//${window.location.hostname}:8070/api/v1`

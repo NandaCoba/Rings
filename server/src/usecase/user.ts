@@ -138,6 +138,16 @@ export class userUsecase {
         }
     }
 
+
+    static async getAllUser() {
+        try {
+            return await userService.findManyUser()
+        } catch (error : any) {
+            console.error(error)
+            throw new Error(error)
+        }
+    }
+
     
 
     

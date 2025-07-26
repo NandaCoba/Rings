@@ -36,10 +36,7 @@ export class userController {
                 username, password 
             }
             const data = await userUsecase.login(finalRequest)
-
-            return res.status(200).json({
-                data : data
-            })
+            return res.cookie("token",data.token).sendStatus(200)
         } catch (error : any) {
             console.error(error)
             return res.status(500).json({
@@ -80,6 +77,22 @@ export class userController {
             const finalRequest : userDto= { password,userId,oldPassword }
             const data = await userUsecase.updatePassword(finalRequest)
 
+            return res.status(200).json({
+                data : data
+            })
+        } catch (error : any) {
+            console.error(error)
+            return res.status(500).json({
+                message : error.message
+            })
+        }
+    }
+
+
+
+    static async getAllUser(req : AuthRequest,res : Response) {
+        try {
+            const data = await userUsecase.getAllUser()
             return res.status(200).json({
                 data : data
             })

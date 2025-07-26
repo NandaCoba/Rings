@@ -1,11 +1,16 @@
+import axios from 'axios'
 import React, { useState } from 'react'
+import { api } from '../../utils/api'
+import toast from 'react-hot-toast'
+import Cookies from 'js-cookie'
 
 const AddConnection = ({ onCancel }) => {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [useLimiter, setUseLimiter] = useState(false)
-  const [limiterValue, setLimiterValue] = useState('')
-  const [limiterUnit, setLimiterUnit] = useState('second')
+  const [limiterValue, setLimiterValue] = useState(null)
+  const [limiterUnit, setLimiterUnit] = useState('')
+  const userId = Cookies.get("token")
 
   const [useCors, setUseCors] = useState(false)
   const [corsUrls, setCorsUrls] = useState([''])
@@ -18,9 +23,7 @@ const AddConnection = ({ onCancel }) => {
     setCorsUrls(updated)
   }
 
-  const addCorsUrl = () => {
-    setCorsUrls([...corsUrls, ''])
-  }
+
 
   const removeCorsUrl = (index) => {
     const updated = [...corsUrls]
@@ -47,6 +50,47 @@ const AddConnection = ({ onCancel }) => {
 
     console.log('Connection created:', newConnection)
     onCancel()
+  }
+
+
+  const handleCreateConnection = async () => {
+
+    try {
+      const response = await axios.post(`${api}/connection`,{ name,url,cors : useCors,rateLimit : useLimiter,totalTimeLimit : Number(limiterValue),whenTimeLimit : limiterUnit }, {
+        headers :{
+          Authorization : `Bearer ${userId}`
+        }
+      })
+      toast.success("Successful create connection")
+
+      if(useCors === false) {
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000);
+      } 
+      else if (useCors === true) { 
+        for (const items of corsUrls) {          
+          await axios.post(`${api}/connection/cors_connection`, { connectionId : response.data.data.connectionId,urlCors : items },{
+            headers : {
+              Authorization : `Bearer ${userId}`
+            }
+          })
+        }
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000);
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+const addCorsUrl = async () => {
+    try {
+      setCorsUrls([...corsUrls, ''])
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -168,6 +212,7 @@ const AddConnection = ({ onCancel }) => {
             Cancel
           </button>
           <button
+            onClick={handleCreateConnection}
             type="submit"
             className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white"
           >

@@ -4,9 +4,12 @@ import Register from "./src/pages/Register"
 import Home from "./src/pages/Home"
 import Notfound from "./src/pages/Notfound"
 import ForgotPassword from "./src/pages/ForgotPassword"
+import { Toaster } from "react-hot-toast"
 
 const App = () => {
   return (
+  <div>
+    <Toaster position="top-right" />
     <Router>
       <Routes>
         <Route path="/login" element={<Login/>}></Route>
@@ -19,6 +22,7 @@ const App = () => {
         <Route path="/*" element={<Notfound/>} />
       </Routes>
     </Router>
+  </div>
   )
 }
 

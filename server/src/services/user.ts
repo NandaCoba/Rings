@@ -14,6 +14,15 @@ export class userService {
         })
     }
 
+    static findManyUser() {
+        return prisma.user.findMany({
+            select : {
+                userId : true
+            }
+        })
+    }
+
+
     static findUsername(req : userDto) {
         return prisma.user.findUnique({
             where : {

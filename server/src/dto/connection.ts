@@ -3,14 +3,17 @@
 
 
 export interface connectionDto {
-  name?         : string
-  description?  : string
-  url?          : string
-  status?       : boolean
-  cors?         : boolean
-  rateLimit?    : boolean
+  connectionId?   : number
+  name?           : string
+  description?    : string
+  url?            : string
+  status?         : any
+  cors?           : boolean
+  rateLimit?      : boolean
   totalTimeLimit? : number
-  whenTimeLimit? : string
-  active?      : boolean
-  userId?       : string
+  whenTimeLimit?  : string
+  userId?         : string
+  page?           : number
+  limit?          : number
+  search?         : string
 }

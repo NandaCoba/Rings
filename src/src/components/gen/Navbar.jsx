@@ -1,23 +1,27 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Power } from 'lucide-react'
+import Cookies from 'js-cookie'
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const avatarRef = useRef(null)
+  const dropdownRef = useRef(null)
 
-  const handleToggle = () => {
-    setDropdownOpen(!dropdownOpen)
-  }
-
-  const handleBlur = (e) => {
-    if (!avatarRef.current?.contains(e.relatedTarget)) {
-      setDropdownOpen(false)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false)
+      }
     }
-  }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleLogout = () => {
-    console.log('Logging out...')
-    // Tambahkan logika logout di sini
+    Cookies.remove("token")
+    window.location.href = "/login"
   }
 
   return (
@@ -25,10 +29,9 @@ const Navbar = () => {
       <div className="flex justify-between items-center w-full">
         <img src="rings.png" className="w-52 mt-4 object-contain" alt="Logo" />
 
-        <div className="relative" onBlur={handleBlur}>
+        <div className="relative" ref={dropdownRef}>
           <button
-            onClick={handleToggle}
-            ref={avatarRef}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
             className="focus:outline-none"
           >
             <img
