@@ -1,4 +1,1 @@
-import axios from "axios";
-
-
-// const api = `${window.location.hostname}:${}`
+export const api = `${window.location.hostname}:4000/api/v1`

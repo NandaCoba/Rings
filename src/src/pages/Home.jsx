@@ -10,7 +10,7 @@ const Home = () => {
       <Navbar />
       
       <div className="mt-10 space-y-5 p-9 flex-1">
-        <MainPort />
+        {/* <MainPort /> */}
         <Table />
       </div>
 

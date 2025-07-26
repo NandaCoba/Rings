@@ -14,7 +14,6 @@ export class userUsecase {
         try {
             const findUser = await userService.findUsername(req)
             if(findUser) throw new Error("user available")
-            if(req.pin?.length! > 6 || req.pin?.length! < 6 ) throw new Error("pin length 6")
             const hashPassword = bcrypt.hashSync(req.password!,10)
             const hashPin = bcrypt.hashSync(req.pin!,10)
             
